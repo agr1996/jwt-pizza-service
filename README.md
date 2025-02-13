@@ -1,7 +1,7 @@
+
 # 🍕 jwt-pizza-service
 
-![Coverage badge](coverageBadge.svg)
-![Coverage badge](https://badge.cs329.click/badge/agr1996/jwtpizzaservicecoverage)
+![Coverage badge](https://badge.cs329.click/badge/accountId/jwtpizzaservicecoverage)
 
 Backend service for making JWT pizzas. This service tracks users and franchises and orders pizzas. All order requests are passed to the JWT Pizza Factory where the pizzas are made.
 
@@ -49,9 +49,6 @@ npm install express jsonwebtoken mysql2 bcrypt
 
 Nodemon is assumed to be installed globally so that you can have hot reloading when debugging.
 
-## trying to remember old secret
-
 ```sh
 npm -g install nodemon
 ```
-
