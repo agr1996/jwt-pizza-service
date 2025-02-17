@@ -1,4 +1,3 @@
-
 # 🍕 jwt-pizza-service
 
 ![Coverage badge](https://badge.cs329.click/badge/accountId/jwtpizzaservicecoverage)
