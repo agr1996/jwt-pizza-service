@@ -3,6 +3,7 @@ const config = require('../config.js');
 const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
+const metrics = require('../metrics');
 
 const orderRouter = express.Router();
 
@@ -90,6 +91,8 @@ orderRouter.post(
     } else {
       res.status(500).send({ message: 'Failed to fulfill order at factory', reportPizzaCreationErrorToPizzaFactoryUrl: j.reportUrl });
     }
+    metrics.orderEvent(orderEvent);
+
   })
 );
 
