@@ -64,6 +64,10 @@ jobs:
             },            
           };" > src/config.js
 
+      - name: Debug config file
+        run: cat src/config.js
+  
+
       - name: Tests
         run: npm test
 
