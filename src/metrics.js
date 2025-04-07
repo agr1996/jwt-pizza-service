@@ -30,8 +30,10 @@ class Metrics {
   sendMetricsPeriodically(period) {
     const timer = setInterval(() => {
       try {
+        console.log("sending Metrics")
         this.sendMetricToGrafana(this.getMetrics());
       } catch (error) {
+        console.error("Error Sending Metrics")
         logger.log('error', 'metrics', { msg: 'Error sending metrics', err: { msg: error.message, stack: error.stack } });
       }
     }, period);
@@ -143,11 +145,15 @@ class Metrics {
   }
 
   sendMetricToGrafana(metrics) {
+    console.log(config.metrics.apiKey)
     fetch(`${config.metrics.url}`, {
       method: 'post',
       body: metrics,
-      headers: { Authorization: `Bearer ${config.metrics.userId}:${config.metrics.apiKey}` },
-    }).catch((error) => {
+      headers: { Authorization: `Bearer ${config.metrics.apiKey}` },
+    }).then(response => {
+      console.log(`Grafana responded: ${response.status}`);
+    })
+    .catch((error) => {
       console.error('Error pushing metrics:', error);
     });
   }
