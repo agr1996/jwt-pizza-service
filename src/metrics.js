@@ -1,6 +1,6 @@
 const config = require('./config.js');
 const os = require('os');
-//const logger = require('./logger.js');
+const logger = require('./logger.js');
 
 class MetricBuilder {
   constructor() {
@@ -32,7 +32,7 @@ class Metrics {
       try {
         this.sendMetricToGrafana(this.getMetrics());
       } catch (error) {
-        //logger.log('error', 'metrics', { msg: 'Error sending metrics', err: { msg: error.message, stack: error.stack } });
+        logger.log('error', 'metrics', { msg: 'Error sending metrics', err: { msg: error.message, stack: error.stack } });
       }
     }, period);
 
