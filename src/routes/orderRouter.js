@@ -3,7 +3,7 @@ const config = require('../config.js');
 const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
-//const metrics = require('../metrics');
+const metrics = require('../metrics');
 
 const orderRouter = express.Router();
 
@@ -96,7 +96,7 @@ orderRouter.post(
     }
 
     orderEvent.end = Date.now();
-    //metrics.orderEvent(orderEvent);
+    metrics.orderEvent(orderEvent);
   })
 );
 
