@@ -147,10 +147,11 @@ class Metrics {
   sendMetricsPeriodically(period) {
     setInterval(() => {
       let builder = new MetricsBuilder();
-      const cpuValue = this.getCpuUsagePercentage() + 6000;
+      const cpuValue = this.getCpuUsagePercentage();
       console.log(cpuValue);
-      builder.addMetric("cpu_1", cpuValue, 'gauge', '%');
-      builder.addMetric("random", 20, 'gauge', '%');
+      builder.addMetric("cpu", cpuValue, 'gauge', '%');
+      const memoryValue = this.getMemoryUsagePercentage();
+      builder.addMetric("memory", memoryValue, 'gauge', '%');
 
       builder.sendToGrafana();
     }, period);
