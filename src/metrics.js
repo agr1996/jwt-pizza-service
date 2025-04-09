@@ -1,7 +1,78 @@
 const config = require('./config.js').metrics;
 const os = require('os');
 
+class MetricsBuilder {
+  constructor() {
+    this.metrics = [];
+  }
+
+  addMetric(name, value, type, unit) {
+    this.metrics.push({ name, value, type, unit });
+  }
+
+  sendToGrafana(url = config.url) {
+    // Create the metric class
+    const metric = {
+      resourceMetrics: [
+        {
+          scopeMetrics: [
+            {
+              metrics: [],
+            },
+          ],
+        },
+      ],
+    };
+
+    // Add the metrics
+    let innerMetrics = metric.resourceMetrics[0].scopeMetrics[0].metrics;
+    let timeUnixNano = Date.now() * 1000000;
+    for (let metric of this.metrics) {
+      let metricObj = {
+        name: metric.name,
+        unit: metric.unit,
+        [metric.type]: {
+          dataPoints: [
+            {
+              asInt: Math.round(metric.value), // Convert to integer
+              timeUnixNano: timeUnixNano
+            }
+          ]
+        }
+      };
+      if (metric.type === 'sum') {
+        metricObj['sum'].aggregationTemporality = 'AGGREGATION_TEMPORALITY_CUMULATIVE';
+        metricObj['sum'].isMonotonic = true; 
+      }
+      innerMetrics.push(metricObj);
+    }
+    console.log(JSON.stringify(metric))
+
+    // Send the metrics
+    const body = JSON.stringify(metric);
+    fetch(url, {
+      method: 'POST',
+      body: body,
+      headers: { Authorization: `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' },
+    })
+    .then((response) => {
+      if (!response.ok) {
+        response.text().then((text) => {
+          console.error(`Failed to push metrics data to Grafana: ${text}\n${body}`);
+        });
+      } else {
+        console.log(`Pushed metrics`);
+      }
+    })
+    .catch((error) => {
+      console.error('Error pushing metrics:', error);
+    });
+  }
+}
+
 class Metrics {
+  requests = {};
+  activeUsers = {};
 
   getCpuUsagePercentage() {
     const cpuUsage = os.loadavg()[0] / os.cpus().length;
@@ -15,6 +86,7 @@ class Metrics {
     return ((usedMemory / totalMemory) * 100).toFixed(2);
   }
 
+    /*
   sendMetricToGrafana(metricName, metricValue, type, unit) {
     const metric = {
       resourceMetrics: [
@@ -40,12 +112,12 @@ class Metrics {
         },
       ],
     };
-  
+
     if (type === 'sum') {
       metric.resourceMetrics[0].scopeMetrics[0].metrics[0][type].aggregationTemporality = 'AGGREGATION_TEMPORALITY_CUMULATIVE';
       metric.resourceMetrics[0].scopeMetrics[0].metrics[0][type].isMonotonic = true;
     }
-  
+
     const body = JSON.stringify(metric);
     console.log('Grafana URL:', config.url); // Debug log
     fetch(`${config.url}`, {
@@ -66,40 +138,22 @@ class Metrics {
         console.error('Error pushing metrics:', error);
       });
   }
-  
-  
+  */
 
   requestTracker = (req, res, next) => {
-    const httpMethod = req.method.toLowerCase();
-    const previousValue = this.requests[httpMethod] ?? 0;
-    this.requests[httpMethod] = previousValue + 1;
-
-    const dateNow = Date.now();
-    if (req.user) {
-      if (this.activeUsers.has(req.user.id)) {
-        this.activeUsers.get(req.user.id).last = dateNow;
-      }
-    }
-
-    let send = res.send;
-    res.send = (resBody) => {
-      this.requestLatency += Date.now() - dateNow;
-      res.send = send;
-      return res.send(resBody);
-    };
-
     next();
   };
 
   sendMetricsPeriodically(period) {
     setInterval(() => {
-      const cpuValue = this.getCpuUsagePercentage() + 7000
-      console.log(cpuValue)
-      this.sendMetricToGrafana('cpu', cpuValue, 'gauge', '%');
+      let builder = new MetricsBuilder();
+      const cpuValue = this.getCpuUsagePercentage() + 6000;
+      console.log(cpuValue);
+      builder.addMetric("cpu_1", cpuValue, 'gauge', '%');
+      builder.addMetric("random", 20, 'gauge', '%');
 
-
+      builder.sendToGrafana();
     }, period);
-
   }
 }
 
