@@ -44,26 +44,41 @@ class Logger {
     logData = JSON.stringify(logData);
     logData = logData.replace(/\\"password\\":\s*\\"[^"]*\\"/g, '\\"password\\": \\"*****\\"');
     logData = logData.replace(/\\"token\\":\s*\\"[^"]*\\"/g, '\\"token\\": \\"*****\\"');
-
     return logData;
   }
 
   sendLogToGrafana(event) {
     const body = JSON.stringify(event);
     fetch(`${config.logging.url}`, {
-      method: 'post',
+      method: 'POST',
       body: body,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.logging.userId}:${config.logging.apiKey}`,
+        Authorization: `Bearer ${config.logging.apiKey}`,
       },
     })
       .then((res) => {
-        if (!res.ok) console.log('Failed to send log to Grafana');
+        return res.text().then(text => {
+          try {
+            const data = text ? JSON.parse(text) : {};
+            return { status: res.status, statusText: res.statusText, body: data };
+          } catch (error) {
+            console.error('Error parsing response:', error);
+            return { status: res.status, statusText: res.statusText, body: text };
+          }
+        });
+      })
+      .then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          console.log('Log successfully sent to Grafana:', response);
+        } else {
+          console.error('Failed to send log to Grafana:', response);
+        }
       })
       .catch((error) => {
         console.error('Error pushing logs:', error);
       });
   }
 }
+
 module.exports = new Logger();
