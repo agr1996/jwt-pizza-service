@@ -8,6 +8,14 @@ const metrics = require('./metrics.js');
 const logger = require('./logger.js');
 
 const app = express();
+
+// Delay middleware to throttle requests
+app.use((req, res, next) => {
+  setTimeout(() => {
+    next();
+  }, 1000); // 1-second delay
+});
+
 app.use(express.json());
 app.use(setAuthUser);
 app.use(logger.httpLogger);
