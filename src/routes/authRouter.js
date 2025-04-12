@@ -18,7 +18,7 @@ authRouter.endpoints = [
     method: 'PUT',
     path: '/api/auth',
     description: 'Login existing user',
-    example: `curl -X PUT localhost:3000/api/auth -d '{"email":"a@jwt.com", "password":"wombat"}' -H 'Content-Type: application/json'`, //changed password to see if it works
+    example: `curl -X PUT localhost:3000/api/auth -d '{"email":"a@jwt.com", "password":"admin"}' -H 'Content-Type: application/json'`, //changed password to see if it works
     response: { user: { id: 1, name: '常用名字', email: 'a@jwt.com', roles: [{ role: 'admin' }] }, token: 'tttttt' },
   },
   {
@@ -26,7 +26,7 @@ authRouter.endpoints = [
     path: '/api/auth/:userId',
     requiresAuth: true,
     description: 'Update user',
-    example: `curl -X PUT localhost:3000/api/auth/1 -d '{"email":"a@jwt.com", "password":"wombat"}' -H 'Content-Type: application/json' -H 'Authorization: Bearer tttttt'`,
+    example: `curl -X PUT localhost:3000/api/auth/1 -d '{"email":"a@jwt.com", "password":"admin"}' -H 'Content-Type: application/json' -H 'Authorization: Bearer tttttt'`,
     response: { id: 1, name: '常用名字', email: 'a@jwt.com', roles: [{ role: 'admin' }] },
   },
   {
