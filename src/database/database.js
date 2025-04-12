@@ -75,7 +75,7 @@ class DB {
     }
   }
 
-  async updateUser(userId, email, password) {
+  /*async updateUser(userId, email, password) {
     const connection = await this.getConnection();
     try {
       const params = [];
@@ -94,7 +94,7 @@ class DB {
     } finally {
       connection.end();
     }
-  }
+  }*/
 
   async loginUser(userId, token) {
     token = this.getTokenSignature(token);

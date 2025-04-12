@@ -45,7 +45,7 @@ test('logout', async () => {
   expect(logoutRes.body).toMatchObject({ message: 'logout successful' });
 });
 
-test('change user', async () => {
+/*test('change user', async () => {
   let [user, userAuthToken] = await TestHelper.createDinerUser();
 
   const body = { email: user.email, password: 'b' };
@@ -54,7 +54,7 @@ test('change user', async () => {
   expect(updateRes.status).toBe(200);
   const loginRes = await request(app).put('/api/auth').send(body);
   expect(loginRes.status).toBe(200);
-});
+});*/
 
 test('auth bad token', async () => {
   const badCookie = ['token=garbage; Path=/; HttpOnly; Secure; SameSite=Strict'];
